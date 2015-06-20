@@ -96,6 +96,7 @@ class YearMenu extends React.Component {
   render() {
     return (
       <div className="pure-menu pure-menu-horizontal fixed-top">
+        <label style={{ float: 'right', margin: '0 60px 0 0'}}><img src="logo.png"/></label>
         <label className="pure-menu-heading">Release Year</label>
         <ul className="pure-menu-list">
           {this.props.all_years.map(year => React.createElement(
