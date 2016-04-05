@@ -1,3 +1,9 @@
+import React from 'react';
+import ReactDOM from 'react-dom';
+import _ from 'lodash';
+import superagent from 'superagent';
+
+
 class Album extends React.Component {
   constructor(props) {
     super(props);
@@ -7,13 +13,15 @@ class Album extends React.Component {
     this.setState({isChecked: !this.state.isChecked});
   }
   render () {
-    var image = _.chain(this.props.images)
+    var image = _(this.props.images)
       .filter(x => Math.abs(x.width - 300) < 100)
-      .first().value();
+      .first();
     return (
       <section className="flip-item-wrap">
         <img className="fake-image" src="record.jpg" alt="" />
-        <input type="checkbox" className="flipper" id={this.props.id} onChange={this.handleChange.bind(this)} checked={this.state.isChecked} hidden />
+        <input type="checkbox" className="flipper" id={this.props.id}
+               onChange={this.handleChange.bind(this)}
+               checked={this.state.isChecked} hidden />
         <label htmlFor={this.props.id} className="flip-item">
           <figure className="front"><img src={image.url} alt=""></img></figure>
           <figure className="back">
@@ -33,16 +41,16 @@ class Album extends React.Component {
 
 class Albums extends React.Component {
 
-  constructor() {
+  constructor(props) {
+    super(props);
     this.all_years = [1950, 1960, 1970, 1980, 1990, 2000, 2010];
     this.state = {years: this.all_years};
   }
 
   componentDidMount () {
-    superagent.get(this.props.source)
-      .end(function(res) {
-        this.setState({albums: res.body});
-      }.bind(this));
+    superagent
+      .get(this.props.source)
+      .end((err, res) => this.setState({albums: res.body}));
   }
 
   handleYearUpdate (years) {
@@ -50,12 +58,12 @@ class Albums extends React.Component {
   }
 
   _randomPick(albums, years, cnt) {
-    var ids = _.chain(albums)
+    var ids = _(albums)
       .keys()
-      .filter(id => _.any(years.map(year => {
-                          var release_year = new Date(Date.parse(albums[id].release_date)).getFullYear(),
-                              diff = release_year - year;
-                          return 0 <  diff && diff <  10;})))
+      .filter(id => _.some(years.map(year => {
+        const release_year = new Date(Date.parse(albums[id].release_date)).getFullYear();
+        const diff = release_year - year;
+        return 0 <  diff && diff <  10;})))
       .sort(x => 0.5 - Math.random())
       .slice(0, cnt)
       .value();
@@ -63,12 +71,14 @@ class Albums extends React.Component {
   }
 
   render() {
-    var ids = this._randomPick(this.state.albums, this.state.years, 100);
+    const ids = this._randomPick(this.state.albums, this.state.years, 100);
     return (
       <div id="albums">
         <YearMenu handleUpdate={this.handleYearUpdate.bind(this)} all_years={this.all_years} />
         <div className="grids">
-          {ids.map(id => React.createElement(Album, this.state.albums[id]))}
+        {ids.map(id => React.createElement(
+          Album, _.merge(this.state.albums[id], {key: id})
+        ))}
         </div>
       </div>
     );
@@ -78,7 +88,8 @@ class Albums extends React.Component {
 
 class YearMenu extends React.Component {
 
-  constructor() {
+  constructor(props) {
+    super(props);
     this.state = {years: []};
   }
 
@@ -100,7 +111,7 @@ class YearMenu extends React.Component {
         <label className="pure-menu-heading">Release Year</label>
         <ul className="pure-menu-list">
           {this.props.all_years.map(year => React.createElement(
-              YearButton, {year: year, handleClick: this.handleClick.bind(this)}))}
+            YearButton, {key: year, year: year, handleClick: this.handleClick.bind(this)}))}
         </ul>
       </div>
         );
@@ -109,7 +120,8 @@ class YearMenu extends React.Component {
 
 class YearButton extends React.Component {
 
-  constructor() {
+  constructor(props) {
+    super(props);
     this.state = {selected: false};
   }
 
@@ -138,5 +150,5 @@ class YearButton extends React.Component {
   }
 }
 
-React.render(<Albums source="data.json" />,
-             document.getElementById('container'));
+ReactDOM.render(<Albums source="data.json" />,
+                document.getElementById('container'));
