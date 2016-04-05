@@ -3,7 +3,10 @@ var webpack = require('webpack');
 
 module.exports = {
   entry: './main.js',
-  output: { path: __dirname, filename: 'bundle.js' },
+  output: {
+    path: path.resolve('./dist'),
+    publicPath: './dist/',
+    filename: 'bundle.js' },
   devtool: 'eval-source-map',
   module: {
     loaders: [
