@@ -47,8 +47,8 @@ class Albums extends React.Component {
 
   constructor(props) {
     super(props);
-    this.all_years = [1950, 1960, 1970, 1980, 1990, 2000, 2010];
-    this.state = {years: this.all_years};
+    this.allYears = [1950, 1960, 1970, 1980, 1990, 2000, 2010];
+    this.state = {years: this.allYears};
   }
 
   componentDidMount () {
@@ -57,7 +57,7 @@ class Albums extends React.Component {
       .end((err, res) => this.setState({albums: res.body}));
   }
 
-  handleYearUpdate (years) {
+  handleYearUpdate(years) {
     this.setState({years: years});
   }
 
@@ -78,7 +78,7 @@ class Albums extends React.Component {
     const ids = this._randomPick(this.state.albums, this.state.years, 100);
     return (
       <div id="albums">
-        <YearMenu handleUpdate={() => this.handleYearUpdate()} all_years={this.all_years} />
+        <YearMenu handleUpdate={(years) => this.handleYearUpdate(years)} allYears={this.allYears} />
         <div className="grids">
         {ids.map(id => React.createElement(
           Album, _.merge(this.state.albums[id], {key: id})
@@ -98,13 +98,13 @@ class YearMenu extends React.Component {
   }
 
   handleClick(year, checked) {
-    var years = this.state.years;
+    let years = _(this.state.years).cloneDeep();
     if (checked) {
       years.push(year);
     } else {
       years = years.filter(x => x != year);
     }
-    this.props.handleUpdate(years.length > 0 ? years : this.props.all_years);
+    this.props.handleUpdate(years.length > 0 ? years : this.props.allYears);
     this.setState({years: years});
   }
 
@@ -114,9 +114,9 @@ class YearMenu extends React.Component {
         <label style={{ float: 'right', margin: '0 60px 0 0'}}><img src="logo.png"/></label>
         <label className="pure-menu-heading">Release Year</label>
         <ul className="pure-menu-list">
-          {this.props.all_years.map(year => React.createElement(
+          {this.props.allYears.map(year => React.createElement(
             YearButton,
-            {key: year, year: year, handleClick: () => this.handleClick()}))}
+            {key: year, year: year, onClick: (year, checked) => this.handleClick(year, checked)}))}
         </ul>
       </div>
         );
@@ -133,7 +133,7 @@ class YearButton extends React.Component {
   handleChange() {
     const selected = !this.state.selected;
     this.setState({selected: selected});
-    this.props.handleClick(this.props.year, selected);
+    this.props.onClick(this.props.year, selected);
   }
 
   render() {
