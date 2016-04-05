@@ -1,13 +1,15 @@
-var path = require('path');
-var webpack = require('webpack');
+const path = require('path');
+const webpack = require('webpack');
+const merge = require('webpack-merge');
+const TARGET = process.env.npm_lifecycle_event;
 
-module.exports = {
+
+common = {
   entry: './main.js',
   output: {
-    path: path.resolve('./dist'),
-    publicPath: './dist/',
+    path: path.resolve(__dirname, 'dist'),
+    publicPath: '/dist/',
     filename: 'bundle.js' },
-  devtool: 'eval-source-map',
   module: {
     loaders: [
       {
@@ -33,3 +35,10 @@ module.exports = {
     ]
   }
 };
+
+
+if(TARGET == 'start' || !TARGET) {
+  module.exports = merge(common, {devtool: 'eval-source-map'});
+} else {
+  module.exports = merge(common, {})
+}

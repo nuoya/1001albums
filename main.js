@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {Component, createElement} from 'react';
 import ReactDOM from 'react-dom';
 import _ from 'lodash';
 import superagent from 'superagent';
@@ -9,7 +9,7 @@ require('purecss/build/base-min.css');
 require('purecss/build/menus-min.css');
 
 
-class Album extends React.Component {
+class Album extends Component {
   constructor(props) {
     super(props);
     this.state = {isChecked: false};
@@ -18,9 +18,7 @@ class Album extends React.Component {
     this.setState({isChecked: !this.state.isChecked});
   }
   render () {
-    var image = _(this.props.images)
-      .filter(x => Math.abs(x.width - 300) < 100)
-      .first();
+    var image = this.props.images.filter(x => Math.abs(x.width - 300) < 100)[0];
     return (
       <section className="flip-item-wrap">
         <img className="fake-image" src="record.jpg" alt="" />
@@ -44,7 +42,7 @@ class Album extends React.Component {
   }
 }
 
-class Albums extends React.Component {
+class Albums extends Component {
 
   constructor(props) {
     super(props);
@@ -81,7 +79,7 @@ class Albums extends React.Component {
       <div id="albums">
         <YearMenu handleUpdate={(years) => this.handleYearUpdate(years)} allYears={this.allYears} />
         <div className="grids">
-        {ids.map(id => React.createElement(
+        {ids.map(id => createElement(
           Album, _.merge(this.state.albums[id], {key: id})
         ))}
         </div>
@@ -91,7 +89,7 @@ class Albums extends React.Component {
 }
 
 
-class YearMenu extends React.Component {
+class YearMenu extends Component {
 
   constructor(props) {
     super(props);
@@ -115,7 +113,7 @@ class YearMenu extends React.Component {
         <label style={{ float: 'right', margin: '0 60px 0 0'}}><img src="logo.png"/></label>
         <label className="pure-menu-heading">Release Year</label>
         <ul className="pure-menu-list">
-          {this.props.allYears.map(year => React.createElement(
+          {this.props.allYears.map(year => createElement(
             YearButton,
             {key: year, year: year, onClick: (year, checked) => this.handleClick(year, checked)}))}
         </ul>
@@ -124,7 +122,7 @@ class YearMenu extends React.Component {
   }
 }
 
-class YearButton extends React.Component {
+class YearButton extends Component {
 
   constructor(props) {
     super(props);
