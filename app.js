@@ -20,7 +20,7 @@ class Album extends React.Component {
       <section className="flip-item-wrap">
         <img className="fake-image" src="record.jpg" alt="" />
         <input type="checkbox" className="flipper" id={this.props.id}
-               onChange={this.handleChange.bind(this)}
+               onChange={() => this.handleChange()}
                checked={this.state.isChecked} hidden />
         <label htmlFor={this.props.id} className="flip-item">
           <figure className="front"><img src={image.url} alt=""></img></figure>
@@ -74,7 +74,7 @@ class Albums extends React.Component {
     const ids = this._randomPick(this.state.albums, this.state.years, 100);
     return (
       <div id="albums">
-        <YearMenu handleUpdate={this.handleYearUpdate.bind(this)} all_years={this.all_years} />
+        <YearMenu handleUpdate={() => this.handleYearUpdate()} all_years={this.all_years} />
         <div className="grids">
         {ids.map(id => React.createElement(
           Album, _.merge(this.state.albums[id], {key: id})
@@ -111,7 +111,8 @@ class YearMenu extends React.Component {
         <label className="pure-menu-heading">Release Year</label>
         <ul className="pure-menu-list">
           {this.props.all_years.map(year => React.createElement(
-            YearButton, {key: year, year: year, handleClick: this.handleClick.bind(this)}))}
+            YearButton,
+            {key: year, year: year, handleClick: () => this.handleClick()}))}
         </ul>
       </div>
         );
@@ -125,24 +126,23 @@ class YearButton extends React.Component {
     this.state = {selected: false};
   }
 
-  onChange() {
-    var selected = !this.state.selected;
+  handleChange() {
+    const selected = !this.state.selected;
     this.setState({selected: selected});
     this.props.handleClick(this.props.year, selected);
   }
 
   render() {
-    var labelStyle;
+    let labelStyle;
     if (this.state.selected) {
       labelStyle = { backgroundColor: '#d8d8d8' };
     } else {
       labelStyle = {};
     }
     return (
-      <li className="pure-menu-item" onChange={this.onChange.bind(this)} >
+      <li className="pure-menu-item" onChange={() => this.handleChange()} >
         <label style={labelStyle} className="pure-menu-link toggle">
-          <input name="years" type="checkbox"
-           checked={this.state.selected} value={this.props.year} hidden/>
+          <input name="years" type="checkbox" checked={this.state.selected} value={this.props.year} hidden/>
           {this.props.year}s
         </label>
       </li>
