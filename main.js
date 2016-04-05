@@ -4,9 +4,10 @@ import _ from 'lodash';
 import superagent from 'superagent';
 
 require('./style.css');
-require('font-awesome/css/font-awesome.css');
-require('purecss/build/pure-min.css');
-require('purecss/build/grids-responsive-min.css');
+require('font-awesome/css/font-awesome.min.css');
+require('purecss/build/base-min.css');
+require('purecss/build/menus-min.css');
+
 
 class Album extends React.Component {
   constructor(props) {
