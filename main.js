@@ -3,6 +3,10 @@ import ReactDOM from 'react-dom';
 import _ from 'lodash';
 import superagent from 'superagent';
 
+require('./style.css');
+require('font-awesome/css/font-awesome.css');
+require('purecss/build/pure-min.css');
+require('purecss/build/grids-responsive-min.css');
 
 class Album extends React.Component {
   constructor(props) {
