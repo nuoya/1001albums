@@ -31,6 +31,14 @@ common = {
       {
         test: /\.(ttf|eot|svg)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
         loader: "file-loader"
+      },
+      {
+        test: /\.jpe?g$|\.gif$|\.png$|\.svg$|\.woff$|\.ttf$|\.wav$|\.mp3$/,
+        loader: "file-loader"
+      },
+      {
+        test: /\.json$/,
+        loader: "file-loader"
       }
     ]
   }

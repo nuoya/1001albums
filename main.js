@@ -3,11 +3,14 @@ import ReactDOM from 'react-dom';
 import _ from 'lodash';
 import superagent from 'superagent';
 
-require('./style.css');
+require('./static/style.css');
 require('font-awesome/css/font-awesome.min.css');
 require('purecss/build/base-min.css');
 require('purecss/build/menus-min.css');
 
+const recordImg = require('./static/record.jpg');
+const logoIcon = require('./static/logo.png');
+const dataFile = require('./static/data.json');
 
 class Album extends Component {
   constructor(props) {
@@ -21,7 +24,7 @@ class Album extends Component {
     var image = this.props.images.filter(x => Math.abs(x.width - 300) < 100)[0];
     return (
       <section className="flip-item-wrap">
-        <img className="fake-image" src="record.jpg" alt="" />
+        <img className="fake-image" src={recordImg} alt="" />
         <input type="checkbox" className="flipper" id={this.props.id}
                onChange={() => this.handleChange()}
                checked={this.state.isChecked} hidden />
@@ -110,7 +113,7 @@ class YearMenu extends Component {
   render() {
     return (
       <div className="pure-menu pure-menu-horizontal fixed-top">
-        <label style={{ float: 'right', margin: '0 60px 0 0'}}><img src="logo.png"/></label>
+        <label style={{ float: 'right', margin: '0 60px 0 0'}}><img src={logoIcon}/></label>
         <label className="pure-menu-heading">Release Year</label>
         <ul className="pure-menu-list">
           {this.props.allYears.map(year => createElement(
@@ -153,5 +156,5 @@ class YearButton extends Component {
   }
 }
 
-ReactDOM.render(<Albums source="data.json" />,
+ReactDOM.render(<Albums source={dataFile} />,
                 document.getElementById('container'));
