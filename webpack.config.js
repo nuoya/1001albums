@@ -1,10 +1,10 @@
-const path = require('path');
-const webpack = require('webpack');
-const merge = require('webpack-merge');
-const TARGET = process.env.npm_lifecycle_event;
+var path = require('path');
+var webpack = require('webpack');
+var yargs = require('yargs');
 
+var optimizeMinimize = yargs.alias('p', 'optimize-minimize').argv.optimizeMinimize;
 
-common = {
+module.exports = {
   entry: './main.js',
   output: {
     path: path.resolve(__dirname, 'dist'),
@@ -41,12 +41,6 @@ common = {
         loader: "file-loader"
       }
     ]
-  }
+  },
+  devtool: optimizeMinimize ? null: 'eval-source-map'
 };
-
-
-if(TARGET == 'start' || !TARGET) {
-  module.exports = merge(common, {devtool: 'eval-source-map'});
-} else {
-  module.exports = merge(common, {})
-}
