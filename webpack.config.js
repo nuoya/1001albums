@@ -5,7 +5,10 @@ var yargs = require('yargs');
 var optimizeMinimize = yargs.alias('p', 'optimize-minimize').argv.optimizeMinimize;
 
 module.exports = {
-  entry: './main.js',
+  entry: [
+    'babel-polyfill',
+    './main.js',
+  ],
   output: {
     path: path.resolve(__dirname, 'dist'),
     publicPath: '/dist/',

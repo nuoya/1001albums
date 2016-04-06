@@ -4,6 +4,7 @@
   "description": "1001 albums you must hear before you die",
   "main": "main.js",
   "dependencies": {
+    "babel-polyfill": "^6.7.4",
     "font-awesome": "^4.5.0",
     "lodash": "^4.8.2",
     "purecss": "^0.6.0",
