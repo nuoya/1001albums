@@ -12,14 +12,79 @@ const recordImg = require('./static/record.jpg');
 const logoIcon = require('./static/logo.png');
 const dataFile = require('./static/data.json');
 
+
+class AlbumsContainer extends Component {
+
+  constructor() {
+    super();
+    this.allYears = [1950, 1960, 1970, 1980, 1990, 2000, 2010];
+    this.count = 100;
+    this.state = {years: this.allYears, albums: {}}
+  }
+
+  componentDidMount () {
+    superagent
+      .get(this.props.source)
+      .end((err, res) => this.setState({albums: res.body}));
+  }
+
+  _randomPick(albums, years, cnt) {
+    const pickedAlbums = _.toPairs(albums)
+      .filter(([id, album]) => _.some(years.map(year => {
+        const release_year = new Date(Date.parse(albums[id].release_date)).getFullYear();
+        const diff = release_year - year;
+        return 0 <  diff && diff <  10;})))
+      .sort(x => 0.5 - Math.random())
+      .slice(0, cnt);
+    return pickedAlbums;
+  }
+
+  handleYearUpdate(years) {
+    this.setState({years: years});
+  }
+
+  render() {
+    return (
+      <Albums albums={this._randomPick(this.state.albums, this.state.years, this.count)}
+              allYears={this.allYears}
+              onYearUpdate={years => this.handleYearUpdate(years)}/>
+    )
+  }
+}
+
+
+class Albums extends Component {
+
+  constructor(props) {
+    super(props);
+  }
+
+  render() {
+    return (
+      <div id="albums">
+        <YearMenu handleUpdate={years => this.props.onYearUpdate(years)} allYears={this.props.allYears} />
+        <div className="grids">
+          {this.props.albums.map(([id, album]) => createElement(
+            Album, Object.assign({key: id}, album)
+          ))}
+        </div>
+      </div>
+    );
+  }
+}
+
+
 class Album extends Component {
+
   constructor(props) {
     super(props);
     this.state = {isChecked: false};
   }
+
   handleChange() {
     this.setState({isChecked: !this.state.isChecked});
   }
+
   render () {
     var image = this.props.images.filter(x => Math.abs(x.width - 300) < 100)[0];
     return (
@@ -41,52 +106,6 @@ class Album extends Component {
           </figure>
         </label>
       </section>
-    );
-  }
-}
-
-class Albums extends Component {
-
-  constructor(props) {
-    super(props);
-    this.allYears = [1950, 1960, 1970, 1980, 1990, 2000, 2010];
-    this.state = {years: this.allYears};
-  }
-
-  componentDidMount () {
-    superagent
-      .get(this.props.source)
-      .end((err, res) => this.setState({albums: res.body}));
-  }
-
-  handleYearUpdate(years) {
-    this.setState({years: years});
-  }
-
-  _randomPick(albums, years, cnt) {
-    var ids = _(albums)
-      .keys()
-      .filter(id => _.some(years.map(year => {
-        const release_year = new Date(Date.parse(albums[id].release_date)).getFullYear();
-        const diff = release_year - year;
-        return 0 <  diff && diff <  10;})))
-      .sort(x => 0.5 - Math.random())
-      .slice(0, cnt)
-      .value();
-    return ids;
-  }
-
-  render() {
-    const ids = this._randomPick(this.state.albums, this.state.years, 100);
-    return (
-      <div id="albums">
-        <YearMenu handleUpdate={(years) => this.handleYearUpdate(years)} allYears={this.allYears} />
-        <div className="grids">
-        {ids.map(id => createElement(
-          Album, _.merge(this.state.albums[id], {key: id})
-        ))}
-        </div>
-      </div>
     );
   }
 }
@@ -125,6 +144,7 @@ class YearMenu extends Component {
   }
 }
 
+
 class YearButton extends Component {
 
   constructor(props) {
@@ -156,5 +176,6 @@ class YearButton extends Component {
   }
 }
 
-ReactDOM.render(<Albums source={dataFile} />,
+
+ReactDOM.render(<AlbumsContainer source={dataFile} />,
                 document.getElementById('container'));
