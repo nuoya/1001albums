@@ -17,39 +17,74 @@ class AlbumsContainer extends Component {
 
   constructor() {
     super();
-    this.allYears = [1950, 1960, 1970, 1980, 1990, 2000, 2010];
-    this.count = 100;
-    this.state = {years: this.allYears, albums: {}}
+    this.state = {years: [], allAlbums:{}, selectedAlbums: []}
   }
 
   componentDidMount () {
     superagent
       .get(this.props.source)
-      .end((err, res) => this.setState({albums: res.body}));
+      .end((err, res) => {
+        const allAlbums = res.body;
+        this.setState({
+          selectedAlbums: this._randomPick(allAlbums, this.state.years),
+          allAlbums: allAlbums
+        })
+      });
   }
 
-  _randomPick(albums, years, cnt) {
+  _randomPick(albums, years) {
+    years = years.length > 0 ? years : this.props.allYears;
     const pickedAlbums = _.toPairs(albums)
       .filter(([id, album]) => _.some(years.map(year => {
-        const release_year = new Date(Date.parse(albums[id].release_date)).getFullYear();
+        const release_year = new Date(Date.parse(album.release_date)).getFullYear();
         const diff = release_year - year;
         return 0 <  diff && diff <  10;})))
       .sort(x => 0.5 - Math.random())
-      .slice(0, cnt);
-    return pickedAlbums;
+      .slice(0, this.props.count);
+    return pickedAlbums.map(
+      ([id, album]) => [id, Object.assign({isSelected: false}, album)]);
   }
 
-  handleYearUpdate(years) {
-    this.setState({years: years});
+  handleToggleYear(year) {
+    const updatedYears = this.state.years.slice();
+    const index = updatedYears.indexOf(year);
+    if (index == -1) {
+      updatedYears.push(year);
+    } else {
+      updatedYears.splice(index, 1);
+    }
+    this.setState({
+      years: updatedYears,
+      selectedAlbums: this._randomPick(this.state.allAlbums, updatedYears),
+    });
+  }
+
+  handleToggleAlbum(albumId) {
+    const selectedAlbums = _(this.state.selectedAlbums).cloneDeep();
+    selectedAlbums.map(([id, album]) => {
+      if(id == albumId) {
+        album.isSelected = ! album.isSelected;
+      }
+    })
+    this.setState({selectedAlbums: selectedAlbums});
   }
 
   render() {
     return (
-      <Albums albums={this._randomPick(this.state.albums, this.state.years, this.count)}
-              allYears={this.allYears}
-              onYearUpdate={years => this.handleYearUpdate(years)}/>
+      <Albums
+        albums={this.state.selectedAlbums}
+        allYears={this.props.allYears}
+        years={this.state.years}
+        onToggleYear={year => this.handleToggleYear(year)}
+        onToggleAlbum={albumId => this.handleToggleAlbum(albumId)}
+      />
     )
   }
+}
+
+AlbumsContainer.defaultProps = {
+  allYears: [1950, 1960, 1970, 1980, 1990, 2000, 2010],
+  count: 100
 }
 
 
@@ -62,10 +97,13 @@ class Albums extends Component {
   render() {
     return (
       <div id="albums">
-        <YearMenu handleUpdate={years => this.props.onYearUpdate(years)} allYears={this.props.allYears} />
+        <YearMenu
+          years={this.props.years}
+          allYears={this.props.allYears}
+          onToggleYear={year => this.props.onToggleYear(year)} />
         <div className="grids">
           {this.props.albums.map(([id, album]) => createElement(
-            Album, Object.assign({key: id}, album)
+            Album, Object.assign({key: id, onToggle: () => this.props.onToggleAlbum(id)}, album)
           ))}
         </div>
       </div>
@@ -78,11 +116,6 @@ class Album extends Component {
 
   constructor(props) {
     super(props);
-    this.state = {isChecked: false};
-  }
-
-  handleChange() {
-    this.setState({isChecked: !this.state.isChecked});
   }
 
   render () {
@@ -90,9 +123,10 @@ class Album extends Component {
     return (
       <section className="flip-item-wrap">
         <img className="fake-image" src={recordImg} alt="" />
-        <input type="checkbox" className="flipper" id={this.props.id}
-               onChange={() => this.handleChange()}
-               checked={this.state.isChecked} hidden />
+        <input
+          type="checkbox" className="flipper" id={this.props.id}
+          onChange={this.props.onToggle}
+          checked={this.props.isSelected} hidden />
         <label htmlFor={this.props.id} className="flip-item">
           <figure className="front"><img src={image.url} alt=""></img></figure>
           <figure className="back">
@@ -115,18 +149,6 @@ class YearMenu extends Component {
 
   constructor(props) {
     super(props);
-    this.state = {years: []};
-  }
-
-  handleClick(year, checked) {
-    let years = _(this.state.years).cloneDeep();
-    if (checked) {
-      years.push(year);
-    } else {
-      years = years.filter(x => x != year);
-    }
-    this.props.handleUpdate(years.length > 0 ? years : this.props.allYears);
-    this.setState({years: years});
   }
 
   render() {
@@ -135,12 +157,17 @@ class YearMenu extends Component {
         <label style={{ float: 'right', margin: '0 60px 0 0'}}><img src={logoIcon}/></label>
         <label className="pure-menu-heading">Release Year</label>
         <ul className="pure-menu-list">
-          {this.props.allYears.map(year => createElement(
-            YearButton,
-            {key: year, year: year, onClick: (year, checked) => this.handleClick(year, checked)}))}
+          {this.props.allYears.map(year =>
+            <YearButton
+              key={year}
+              year={year}
+              isSelected={this.props.years.indexOf(year) != -1}
+              onClick={() => this.props.onToggleYear(year)}
+            />)
+          }
         </ul>
       </div>
-        );
+    );
   }
 }
 
@@ -149,26 +176,17 @@ class YearButton extends Component {
 
   constructor(props) {
     super(props);
-    this.state = {selected: false};
-  }
-
-  handleChange() {
-    const selected = !this.state.selected;
-    this.setState({selected: selected});
-    this.props.onClick(this.props.year, selected);
   }
 
   render() {
-    let labelStyle;
-    if (this.state.selected) {
-      labelStyle = { backgroundColor: '#d8d8d8' };
-    } else {
-      labelStyle = {};
+    const labelStyle = {};
+    if (this.props.isSelected) {
+      labelStyle.backgroundColor = '#d8d8d8';
     }
     return (
-      <li className="pure-menu-item" onChange={() => this.handleChange()} >
+      <li className="pure-menu-item" onChange={this.props.onClick} >
         <label style={labelStyle} className="pure-menu-link toggle">
-          <input name="years" type="checkbox" checked={this.state.selected} value={this.props.year} hidden/>
+          <input name="years" type="checkbox" checked={this.props.isSelected} value={this.props.year} hidden/>
           {this.props.year}s
         </label>
       </li>
