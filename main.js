@@ -45,7 +45,7 @@ class AlbumsContainer extends Component {
       ([id, album]) => [id, Object.assign({isSelected: false}, album)]);
   }
 
-  handleToggleYear(year) {
+  handleYearToggle(year) {
     const updatedYears = this.state.years.slice();
     const index = updatedYears.indexOf(year);
     if (index == -1) {
@@ -59,7 +59,7 @@ class AlbumsContainer extends Component {
     });
   }
 
-  handleToggleAlbum(albumId) {
+  handleAlbumToggle(albumId) {
     const selectedAlbums = _(this.state.selectedAlbums).cloneDeep();
     selectedAlbums.map(([id, album]) => {
       if(id == albumId) {
@@ -75,8 +75,8 @@ class AlbumsContainer extends Component {
         albums={this.state.selectedAlbums}
         allYears={this.props.allYears}
         years={this.state.years}
-        onToggleYear={year => this.handleToggleYear(year)}
-        onToggleAlbum={albumId => this.handleToggleAlbum(albumId)}
+        onYearToggle={year => this.handleYearToggle(year)}
+        onAlbumToggle={albumId => this.handleAlbumToggle(albumId)}
       />
     )
   }
@@ -88,18 +88,18 @@ AlbumsContainer.defaultProps = {
 };
 
 
-const Albums = ({albums, years, allYears, onToggleYear, onToggleAlbum}) => (
+const Albums = ({albums, years, allYears, onYearToggle, onAlbumToggle}) => (
   <div id="albums">
     <YearMenu
       years={years}
       allYears={allYears}
-      onToggleYear={year => onToggleYear(year)} />
+      onYearToggle={year => onYearToggle(year)} />
     <div className="grids">
       {albums.map(
         ([id, album]) =>
           <Album
             {...Object.assign(
-              {key: id, onToggle: () => onToggleAlbum(id)}, album)
+              {key: id, onToggle: () => onAlbumToggle(id)}, album)
             }
           />
       )}
@@ -138,7 +138,7 @@ const Album = ({id, name, release_date, uri, artists, images, onToggle, isSelect
 };
 
 
-const YearMenu = ({allYears, years, onToggleYear}) => (
+const YearMenu = ({allYears, years, onYearToggle}) => (
   <div className="pure-menu pure-menu-horizontal fixed-top">
     <label style={{ float: 'right', margin: '0 60px 0 0'}}>
       <img src={logoIcon}/>
@@ -150,7 +150,7 @@ const YearMenu = ({allYears, years, onToggleYear}) => (
           key={year}
           year={year}
           isSelected={years.indexOf(year) != -1}
-          onClick={() => onToggleYear(year)}
+          onClick={() => onYearToggle(year)}
         />)
       }
     </ul>
@@ -160,7 +160,7 @@ const YearMenu = ({allYears, years, onToggleYear}) => (
 YearMenu.propTypes = {
   allYears: PropTypes.array.isRequired,
   years: PropTypes.array.isRequired,
-  onToggleYear: PropTypes.func.isRequired
+  onYearToggle: PropTypes.func.isRequired
 };
 
 
