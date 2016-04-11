@@ -1,4 +1,3 @@
-import _ from 'lodash';
 import { combineReducers } from 'redux';
 
 const years = (state = [], action) => {
@@ -17,6 +16,15 @@ const years = (state = [], action) => {
   }
 };
 
+const albums = (state = {}, action) => {
+  switch (action.type) {
+    case 'FETCH_ALBUMS_SUCCEEDED':
+      return action.albums;
+    default:
+      return state;
+  }
+};
+
 const selectedAlbums = (state = [], action) => {
   switch (action.type) {
     case 'TOGGLE_ALBUM':
@@ -29,11 +37,10 @@ const selectedAlbums = (state = [], action) => {
           return [id, album];
         }
       });
-    case 'ALBUMS_FETCH_SUCCEEDED':
-      // TODO hardcoded
-      return _.toPairs(action.albums).slice(0, 10);
+    case 'SELECTED_ALBUMS':
+      return action.selectedAlbums;
     default:
-      return state
+      return state;
   }
 };
 
@@ -54,5 +61,5 @@ const album = (state, action) => {
 
 
 export const app = combineReducers({
-  selectedAlbums, years
+  selectedAlbums, years, albums
 });
