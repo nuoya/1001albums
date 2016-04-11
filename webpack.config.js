@@ -7,6 +7,7 @@ var optimizeMinimize = yargs.alias('p', 'optimize-minimize').argv.optimizeMinimi
 module.exports = {
   entry: [
     'babel-polyfill',
+    'whatwg-fetch',
     './main.js',
   ],
   output: {
