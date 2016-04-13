@@ -1,12 +1,12 @@
 import React, { PropTypes } from 'react';
 
-require('./static/style.css');
+require('../static/style.css');
 require('font-awesome/css/font-awesome.min.css');
 require('purecss/build/base-min.css');
 require('purecss/build/menus-min.css');
 
-const recordImg = require('./static/record.jpg');
-const logoIcon = require('./static/logo.png');
+const recordImg = require('../static/record.jpg');
+const logoIcon = require('../static/logo.png');
 
 export const Albums = ({albums, years, allYears, onYearToggle, onAlbumToggle}) => (
   <div id="albums">

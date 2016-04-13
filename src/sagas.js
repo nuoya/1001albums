@@ -3,7 +3,7 @@ import { takeEvery } from 'redux-saga'
 import { call, put } from 'redux-saga/effects'
 import {allYears, showCount} from './constants';
 
-const dataFile = require('./static/data.json');
+const dataFile = require('../static/data.json');
 
 function fetchAlbumsApi(url) {
   return fetch(url).then(response => response.json());

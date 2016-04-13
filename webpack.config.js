@@ -8,7 +8,7 @@ module.exports = {
   entry: [
     'babel-polyfill',
     'whatwg-fetch',
-    './main.js',
+    './src/main.js',
   ],
   output: {
     path: path.resolve(__dirname, 'dist'),
