@@ -5,15 +5,13 @@ import {allYears, showCount} from './constants';
 
 const dataFile = require('../static/data.json');
 
-function fetchAlbumsApi(url) {
-  return fetch(url).then(response => response.json());
-}
-
 export function* fetchAlbums(getState) {
   try {
     yield put({type: 'FETCH_ALBUMS_STARTED'})
-    const albums = yield call(fetchAlbumsApi, dataFile);
+    const albums = yield call(() =>
+      fetch(dataFile).then(response => response.json()));
     yield put({type: 'FETCH_ALBUMS_SUCCEEDED', albums});
+
     const state = getState();
     const selectedAlbums = _randomSelect(state.albums, state.years);
     yield put({type: 'SELECTED_ALBUMS', selectedAlbums});
