@@ -45,21 +45,6 @@ const selectedAlbums = (state = [], action) => {
 };
 
 
-const album = (state, action) => {
-  switch (action.type) {
-    case 'TOGGLE_ALBUM':
-      if (state.id != action.id) {
-        return state
-      }
-      return Object.assign({}, state, {
-        isSelected: !state.isSelected
-      });
-    default:
-      return state;
-  }
-};
-
-
 export const app = combineReducers({
   selectedAlbums, years, albums
 });

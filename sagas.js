@@ -1,6 +1,7 @@
 import _ from 'lodash';
 import { takeEvery } from 'redux-saga'
 import { call, put } from 'redux-saga/effects'
+import {allYears, showCount} from './constants';
 
 const dataFile = require('./static/data.json');
 
@@ -31,14 +32,14 @@ function* randomSelect(state) {
 };
 
 function  _randomSelect(albums, years) {
-  years = years.length > 0 ? years : [1950, 1960, 1970, 1980, 1990, 2000, 2010];
+  years = years.length > 0 ? years : allYears;
   const pickedAlbums = _.toPairs(albums)
     .filter(([id, album]) => _.some(years.map(year => {
       const release_year = new Date(Date.parse(album.release_date)).getFullYear();
       const diff = release_year - year;
       return 0 <  diff && diff <  10;})))
     .sort(x => 0.5 - Math.random())
-    .slice(0, 100);
+    .slice(0, showCount);
   return pickedAlbums.map(
       ([id, album]) => [id, Object.assign({isSelected: false}, album)]);
 };

@@ -1,6 +1,7 @@
 import { connect } from 'react-redux';
 import { Albums } from './components';
 import {toggleAlbum, toggleYear} from './actions';
+import {allYears} from './constants';
 
 const mapStateToProps = (state) => {
   return {
