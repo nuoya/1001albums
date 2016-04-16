@@ -31,13 +31,13 @@ function* randomSelect(state) {
 
 function  _randomSelect(albums, years) {
   years = years.length > 0 ? years : allYears;
-  const pickedAlbums = _.toPairs(albums)
+  const selectedAlbums = new Map(
+    _.toPairs(albums)
     .filter(([id, album]) => _.some(years.map(year => {
       const release_year = new Date(Date.parse(album.release_date)).getFullYear();
       const diff = release_year - year;
       return 0 <  diff && diff <  10;})))
     .sort(x => 0.5 - Math.random())
-    .slice(0, showCount);
-  return pickedAlbums.map(
-      ([id, album]) => [id, Object.assign({isSelected: false}, album)]);
+    .slice(0, showCount));
+  return selectedAlbums;
 };

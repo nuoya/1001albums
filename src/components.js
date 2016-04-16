@@ -15,14 +15,14 @@ export const Albums = ({albums, years, allYears, onYearToggle, onAlbumToggle}) =
       allYears={allYears}
       onYearToggle={year => onYearToggle(year)} />
     <div className="grids">
-      {albums.map(
+      {[...albums].map(
         ([id, album]) =>
           <Album
             {...Object.assign(
               {key: id, onToggle: () => onAlbumToggle(id)}, album)
             }
-          />
-      )}
+          />)
+      }
     </div>
   </div>
 );
@@ -56,6 +56,10 @@ const Album = ({id, name, release_date, uri, artists, images, onToggle, isSelect
     </section>
   );
 };
+
+Album.propTypes = {
+  isSelected: PropTypes.bool
+}
 
 
 const YearMenu = ({allYears, years, onYearToggle}) => (

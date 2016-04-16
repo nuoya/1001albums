@@ -25,18 +25,16 @@ const albums = (state = {}, action) => {
   }
 };
 
-const selectedAlbums = (state = [], action) => {
+const selectedAlbums = (state = new Map(), action) => {
   switch (action.type) {
     case 'TOGGLE_ALBUM':
-      return state.map(([id, album]) => {
-        if (id == action.albumId) {
-          return [id, Object.assign({}, album, {
-            isSelected: !album.isSelected
-          })];
-        } else {
-          return [id, album];
-        }
-      });
+      const newState = new Map(state);
+      const album = state.get(action.albumId);
+      newState.set(action.albumId, Object.assign({}, album, {
+          isSelected: !album.isSelected
+        })
+      );
+      return newState;
     case 'SELECTED_ALBUMS':
       return action.selectedAlbums;
     default:
