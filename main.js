@@ -23,22 +23,23 @@ class AlbumsContainer extends Component {
     fetch(this.props.source)
       .then(response => response.json())
       .then(allAlbums => this.setState({
-        selectedAlbums: this._randomPick(allAlbums, this.state.years),
+        selectedAlbums: this.randomSelect(allAlbums, this.state.years),
         allAlbums: allAlbums})
       );
   }
 
-  _randomPick(albums, years) {
+
+  randomSelect(albums, years) {
     years = years.length > 0 ? years : this.props.allYears;
-    const pickedAlbums = _.toPairs(albums)
+    const selectedAlbums = new Map(
+      _.toPairs(albums)
       .filter(([id, album]) => _.some(years.map(year => {
-        const release_year = new Date(Date.parse(album.release_date)).getFullYear();
-        const diff = release_year - year;
+        const releaseYear = new Date(Date.parse(album['release_date'])).getFullYear();
+        const diff = releaseYear - year;
         return 0 <  diff && diff <  10;})))
       .sort(x => 0.5 - Math.random())
-      .slice(0, this.props.count);
-    return pickedAlbums.map(
-      ([id, album]) => [id, Object.assign({isSelected: false}, album)]);
+      .slice(0, this.props.count));
+    return selectedAlbums;
   }
 
   handleToggleYear(year) {
@@ -51,17 +52,14 @@ class AlbumsContainer extends Component {
     }
     this.setState({
       years: updatedYears,
-      selectedAlbums: this._randomPick(this.state.allAlbums, updatedYears),
+      selectedAlbums: this.randomSelect(this.state.allAlbums, updatedYears)
     });
   }
 
   handleToggleAlbum(albumId) {
-    const selectedAlbums = _(this.state.selectedAlbums).cloneDeep();
-    selectedAlbums.map(([id, album]) => {
-      if(id == albumId) {
-        album.isSelected = ! album.isSelected;
-      }
-    })
+    const selectedAlbums = new Map(this.state.selectedAlbums);
+    const album = selectedAlbums.get(albumId);
+    selectedAlbums.set(albumId, Object.assign({}, album, {isSelected: !album.isSelected}));
     this.setState({selectedAlbums: selectedAlbums});
   }
 
@@ -91,7 +89,7 @@ const Albums = ({albums, years, allYears, onToggleYear, onToggleAlbum}) => (
       allYears={allYears}
       onToggleYear={year => onToggleYear(year)} />
     <div className="grids">
-      {albums.map(
+      {[...albums].map(
         ([id, album]) =>
           <Album
             {...Object.assign(
@@ -104,7 +102,7 @@ const Albums = ({albums, years, allYears, onToggleYear, onToggleAlbum}) => (
 );
 
 
-const Album = ({id, name, release_date, uri, artists, images, onToggle, isSelected}) => {
+const Album = ({id, name, release_date, uri, artists, images, onToggle, isSelected=false}) => {
   var image = images.filter(x => Math.abs(x.width - 300) < 100)[0];
   return (
     <section className="flip-item-wrap">
