@@ -1,6 +1,5 @@
 import React, {Component, createElement, PropTypes} from 'react';
 import ReactDOM from 'react-dom';
-import _ from 'lodash';
 
 require('./static/style.css');
 require('font-awesome/css/font-awesome.min.css');
@@ -36,9 +35,9 @@ class AlbumsContainer extends Component {
         .map(key => [key, albums[key]])
         .map(([id, album]) => [id, Object.assign(
             {}, album, {releaseYear: new Date(Date.parse(album['release_date'])).getFullYear()})])
-        .filter(([id, album]) => _.some(years.map(year => {
+        .filter(([id, album]) => years.filter(year => {
           const diff = album.releaseYear - year;
-          return 0 <  diff && diff <  10;})))
+          return 0 <  diff && diff <  10;}).length > 0)
         .sort(x => 0.5 - Math.random())
         .slice(0, this.props.count));
     return selectedAlbums;
