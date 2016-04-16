@@ -32,13 +32,15 @@ class AlbumsContainer extends Component {
   randomSelect(albums, years) {
     years = years.length > 0 ? years : this.props.allYears;
     const selectedAlbums = new Map(
-      _.toPairs(albums)
-      .filter(([id, album]) => _.some(years.map(year => {
-        const releaseYear = new Date(Date.parse(album['release_date'])).getFullYear();
-        const diff = releaseYear - year;
-        return 0 <  diff && diff <  10;})))
-      .sort(x => 0.5 - Math.random())
-      .slice(0, this.props.count));
+      Object.keys(albums)
+        .map(key => [key, albums[key]])
+        .map(([id, album]) => [id, Object.assign(
+            {}, album, {releaseYear: new Date(Date.parse(album['release_date'])).getFullYear()})])
+        .filter(([id, album]) => _.some(years.map(year => {
+          const diff = album.releaseYear - year;
+          return 0 <  diff && diff <  10;})))
+        .sort(x => 0.5 - Math.random())
+        .slice(0, this.props.count));
     return selectedAlbums;
   }
 
@@ -102,7 +104,7 @@ const Albums = ({albums, years, allYears, onToggleYear, onToggleAlbum}) => (
 );
 
 
-const Album = ({id, name, release_date, uri, artists, images, onToggle, isSelected=false}) => {
+const Album = ({id, name, releaseYear, uri, artists, images, onToggle, isSelected=false}) => {
   var image = images.filter(x => Math.abs(x.width - 300) < 100)[0];
   return (
     <section className="flip-item-wrap">
@@ -117,7 +119,7 @@ const Album = ({id, name, release_date, uri, artists, images, onToggle, isSelect
           <img src={image.url} alt=""></img>
           <div className="flip-item-desc">
             <h4 className="flip-item-title">{name}</h4>
-            <p>{new Date(Date.parse(release_date)).getFullYear()}</p>
+            <p>{releaseYear}</p>
             <a className="artist-link" href={artists[0].uri}>
               <p>{artists[0].name}</p>
             </a>
