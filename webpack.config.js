@@ -1,5 +1,4 @@
 var path = require('path');
-var webpack = require('webpack');
 var yargs = require('yargs');
 
 var optimizeMinimize = yargs.alias('p', 'optimize-minimize').argv.optimizeMinimize;
