@@ -45,5 +45,5 @@ module.exports = {
       }
     ]
   },
-  devtool: optimizeMinimize ? null: 'eval-source-map'
+  devtool: optimizeMinimize ? null: 'source-map'
 };
