@@ -1,7 +1,6 @@
 import React, {Component, createElement, PropTypes} from 'react';
 import ReactDOM from 'react-dom';
 import _ from 'lodash';
-import superagent from 'superagent';
 
 require('./static/style.css');
 require('font-awesome/css/font-awesome.min.css');
@@ -21,15 +20,12 @@ class AlbumsContainer extends Component {
   }
 
   componentDidMount () {
-    superagent
-      .get(this.props.source)
-      .end((err, res) => {
-        const allAlbums = res.body;
-        this.setState({
-          selectedAlbums: this._randomPick(allAlbums, this.state.years),
-          allAlbums: allAlbums
-        })
-      });
+    fetch(this.props.source)
+      .then(response => response.json())
+      .then(allAlbums => this.setState({
+        selectedAlbums: this._randomPick(allAlbums, this.state.years),
+        allAlbums: allAlbums})
+      );
   }
 
   _randomPick(albums, years) {
