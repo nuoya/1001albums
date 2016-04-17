@@ -28,7 +28,7 @@ export const Albums = ({albums, years, allYears, onYearToggle, onAlbumToggle}) =
 );
 
 
-const Album = ({id, name, release_date, uri, artists, images, onToggle, isSelected=false}) => {
+const Album = ({id, name, releaseYear, uri, artists, images, onToggle, isSelected=false}) => {
   var image = images.filter(x => Math.abs(x.width - 300) < 100)[0];
   return (
     <section className="flip-item-wrap">
@@ -43,7 +43,7 @@ const Album = ({id, name, release_date, uri, artists, images, onToggle, isSelect
           <img src={image.url} alt=""></img>
           <div className="flip-item-desc">
             <h4 className="flip-item-title">{name}</h4>
-            <p>{new Date(Date.parse(release_date)).getFullYear()}</p>
+            <p>{releaseYear}</p>
             <a className="artist-link" href={artists[0].uri}>
               <p>{artists[0].name}</p>
             </a>

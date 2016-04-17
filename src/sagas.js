@@ -1,4 +1,3 @@
-import _ from 'lodash';
 import { takeEvery } from 'redux-saga'
 import { call, put } from 'redux-saga/effects'
 import {allYears, showCount} from './constants';
@@ -29,15 +28,21 @@ function* randomSelect(state) {
   yield put({ type: 'SELECTED_ALBUMS', selectedAlbums });
 };
 
+
+const getYear = (date) => new Date(Date.parse(date)).getFullYear();
+
+
 function  _randomSelect(albums, years) {
   years = years.length > 0 ? years : allYears;
   const selectedAlbums = new Map(
-    _.toPairs(albums)
-    .filter(([id, album]) => _.some(years.map(year => {
-      const release_year = new Date(Date.parse(album.release_date)).getFullYear();
-      const diff = release_year - year;
-      return 0 <  diff && diff <  10;})))
-    .sort(x => 0.5 - Math.random())
-    .slice(0, showCount));
+    Object.keys(albums)
+      .map(key => [key, albums[key]])
+      .map(([id, album]) => [id, Object.assign(
+        {}, album, {releaseYear: getYear(album['release_date'])})])
+      .filter(([id, album]) => years.filter(year => {
+        const diff = album.releaseYear - year;
+        return 0 <  diff && diff <  10;}).length > 0)
+      .sort(x => 0.5 - Math.random())
+      .slice(0, showCount));
   return selectedAlbums;
 };
